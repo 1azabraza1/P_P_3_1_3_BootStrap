@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Работа с User</title>
+</head>
+
+<body>
+<h3 th:text="${user.id == null ? 'Добавление user' : 'Изменение user'}"></h3>
+<div class="container">
+    <form th:action="@{/admin/edit}"
+          th:object="${user}" method="post" class="form-horizontal">
+
+        <div>
+            <input th:field="*{id}" hidden/>
+        </div>
+
+        <div> <label>Name:</label>
+            <input th:field="*{name}" />
+        </div>
+
+        <div> <label>Email:</label>
+            <input th:field="*{email}" />
+        </div>
+
+        <div> <label>Age:</label>
+            <input th:field="*{age}" />
+        </div>
+
+        <div> <label>Password:</label>
+            <input th:field="*{password}" />
+        </div>
+
+        <div>
+            <label>Roles:</label>
+            <div th:each="role : ${allRoles}">
+                <input type="checkbox" th:id="${'role_' + role.id}"
+                       th:value="${role.id}" th:field="*{roles}"
+                />
+                <label th:for="${'role_' + role.id}" th:text="${role.name}"></label>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit">Готово</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
