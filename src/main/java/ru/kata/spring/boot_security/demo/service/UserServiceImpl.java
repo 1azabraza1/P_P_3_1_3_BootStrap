@@ -12,7 +12,7 @@ import ru.kata.spring.boot_security.demo.repository.UserJpaRepository;
 
 import java.util.List;
 
-@Transactional
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userJpaRepository.findByName(username);
         if (user == null) {
@@ -39,11 +40,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void saveUser(User user) {
         userJpaRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         userJpaRepository.deleteById(id);
     }
