@@ -34,14 +34,12 @@ public class AdminController {
 
     @GetMapping("/add")
     public String add(Model model) {
-        List<User> allUsers = userService.getAllUsers();
-        User userAuth = userService.getAuthUser();
+
+
         List<Role> allRoles = userService.getAllRoles();
 
-        model.addAttribute("users", allUsers);
-        model.addAttribute("user", userAuth);
+        model.addAttribute("user", new User());
         model.addAttribute("allRoles", allRoles);
-        model.addAttribute("newUser", new User());
         return "user-edit";
     }
 
