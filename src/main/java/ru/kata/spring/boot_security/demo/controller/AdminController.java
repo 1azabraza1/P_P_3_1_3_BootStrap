@@ -18,13 +18,11 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleService roleService;
 
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @GetMapping
@@ -36,10 +34,14 @@ public class AdminController {
 
     @GetMapping("/add")
     public String add(Model model) {
-        User user = new User();
-        List<Role> roles = roleService.getRoles();
-        model.addAttribute("allRoles", roles);
-        model.addAttribute("user", user);
+        List<User> allUsers = userService.getAllUsers();
+        User userAuth = userService.getAuthUser();
+        List<Role> allRoles = userService.getAllRoles();
+
+        model.addAttribute("users", allUsers);
+        model.addAttribute("user", userAuth);
+        model.addAttribute("allRoles", allRoles);
+        model.addAttribute("newUser", new User());
         return "user-edit";
     }
 
@@ -52,9 +54,11 @@ public class AdminController {
     @GetMapping("/edit/{id}")
     public String editUser(@PathVariable(value = "id") Long id, Model model) {
         User user = userService.getById(id);
-        List<Role> roles = roleService.getRoles();
-        model.addAttribute("allRoles", roles);
+        List<Role> allroles = userService.getAllRoles();
+        model.addAttribute("allRoles", allroles);
         model.addAttribute("user", user);
+        user.setRoles(allroles);
+        userService.updateUser(user);
         return "user-edit";
     }
 

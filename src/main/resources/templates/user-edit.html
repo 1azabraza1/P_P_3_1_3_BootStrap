@@ -27,18 +27,21 @@
             <input th:field="*{age}" />
         </div>
 
-        <div> <label>Password:</label>
-            <input th:field="*{password}" />
+        <div class="form-group">
+            <label class="font-weight-bold">Password</label>
+            <input type="password" class="form-control" th:id="password" name="password">
         </div>
 
         <div>
-            <label>Roles:</label>
-            <div th:each="role : ${allRoles}">
-                <input type="checkbox" th:id="${'role_' + role.id}"
-                       th:value="${role.id}" th:field="*{roles}"
-                />
-                <label th:for="${'role_' + role.id}" th:text="${role.name}"></label>
-            </div>
+        <label class="font-weight-bold">Role</label>
+        <div>
+            <select  class="form-control" name="roles" multiple>
+                <option th:each="role: ${allRoles}"
+                        th:value="${role.id}"
+                        th:text="${role.name}" name="roles">
+                </option>
+            </select>
+        </div>
         </div>
 
         <div>
