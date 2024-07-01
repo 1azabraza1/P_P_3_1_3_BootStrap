@@ -55,8 +55,6 @@ public class AdminController {
         List<Role> allroles = userService.getAllRoles();
         model.addAttribute("allRoles", allroles);
         model.addAttribute("user", user);
-        user.setRoles(allroles);
-        userService.updateUser(user);
         return "user-edit";
     }
 
