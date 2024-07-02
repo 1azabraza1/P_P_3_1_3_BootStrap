@@ -1,18 +1,16 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+import ru.kata.spring.boot_security.demo.repository.RoleJpaRepository;
 import ru.kata.spring.boot_security.demo.repository.UserJpaRepository;
 
 import java.util.List;
@@ -20,17 +18,16 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private UserJpaRepository userJpaRepository;
-    private RoleRepository roleJpaRepository;
-    private PasswordEncoder passwordEncoder;
-
+    private RoleJpaRepository roleJpaRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserJpaRepository userJpaRepository, RoleRepository roleJpaRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userJpaRepository = userJpaRepository;
         this.roleJpaRepository = roleJpaRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -51,13 +48,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userJpaRepository.save(user);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+        User user = userJpaRepository.findById(id).get();
+        user.setRoles(null);
+        userJpaRepository.save(user);
         userJpaRepository.deleteById(id);
     }
 
@@ -76,5 +76,4 @@ public class UserServiceImpl implements UserService {
     public List<Role> getAllRoles() {
         return roleJpaRepository.findAll();
     }
-
 }

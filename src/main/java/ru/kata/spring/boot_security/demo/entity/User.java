@@ -1,8 +1,10 @@
 package ru.kata.spring.boot_security.demo.entity;
 
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -19,11 +21,11 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "email", unique = true)
-    private String email;
+    @Column(name = "surname")
+    private String surname;
 
     @Column(name = "password")
     private String password;
@@ -31,17 +33,30 @@ public class User implements UserDetails {
     @Column(name = "age")
     private Byte age;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @Column(name = "email", unique = true)
+    private String email;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-
     private List<Role> roles;
 
     @Override
     public List<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList());
     }
+
+    public User(String name, String surname, String password,
+                Byte age, String email, List<Role> roles) {
+        this.name = name;
+        this.surname = surname;
+        this.password = password;
+        this.age = age;
+        this.email = email;
+        this.roles = roles;
+    }
+
 
     @Override
     public String getPassword() {
@@ -76,9 +91,9 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String email, Byte age) {
+    public User(String name, String surname, Byte age) {
         this.name = name;
-        this.email = email;
+        this.surname = surname;
         this.age = age;
     }
 
@@ -98,12 +113,12 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public Byte getAge() {
@@ -122,7 +137,20 @@ public class User implements UserDetails {
         return roles;
     }
 
+    public String getRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return String.join(" ", AuthorityUtils.authorityListToSet(getRoles()));
+    }
+
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
