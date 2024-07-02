@@ -8,9 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
-import ru.kata.spring.boot_security.demo.repository.RoleJpaRepository;
 import ru.kata.spring.boot_security.demo.repository.UserJpaRepository;
 
 import java.util.List;
@@ -18,15 +16,14 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private UserJpaRepository userJpaRepository;
-    private RoleJpaRepository roleJpaRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository,
+    public UserServiceImpl(UserJpaRepository userJpaRepository,
                            BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userJpaRepository = userJpaRepository;
-        this.roleJpaRepository = roleJpaRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -72,8 +69,4 @@ public class UserServiceImpl implements UserService {
         return userJpaRepository.findByName(auth.getName());
     }
 
-    @Override
-    public List<Role> getAllRoles() {
-        return roleJpaRepository.findAll();
-    }
 }
